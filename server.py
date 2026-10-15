@@ -24,6 +24,7 @@ class StravaError(Exception):
 
 PROFILE_RE = re.compile(r"[A-Za-z0-9_.-]{1,64}")
 DEFAULT_PROFILE = os.environ.get("STRAVA_DEFAULT_PROFILE", "personal")
+ENV_CREDENTIAL_PROFILE = os.environ.get("STRAVA_CREDENTIAL_PROFILE", DEFAULT_PROFILE)
 
 
 def validate_profile(profile):
@@ -89,7 +90,7 @@ class CredentialStore:
         path = self._file_for(profile)
         if path.exists():
             return self._read(path)
-        if profile == "default":
+        if profile == ENV_CREDENTIAL_PROFILE:
             token = os.environ.get("STRAVA_ACCESS_TOKEN")
             cookie = os.environ.get("STRAVA_SESSION_COOKIE")
             if bool(token) == bool(cookie) and (token or cookie):
@@ -109,9 +110,10 @@ class CredentialStore:
                     names.add(path.stem)
         except OSError:
             pass
-        if self._file_for("default").exists() or os.environ.get(
+        if self._file_for("default").exists() or self._file_for(ENV_CREDENTIAL_PROFILE).exists() or os.environ.get(
                 "STRAVA_ACCESS_TOKEN") or os.environ.get("STRAVA_SESSION_COOKIE"):
             names.add("default")
+            names.add(ENV_CREDENTIAL_PROFILE)
         return sorted(names)
 
     def status(self, profile=DEFAULT_PROFILE):
@@ -127,7 +129,7 @@ class CredentialStore:
                 return {"profile": profile, "configured": False,
                         "credential_kind": None, "source": "file", "path": str(path),
                         "error": str(error)}
-        if profile == "default":
+        if profile == ENV_CREDENTIAL_PROFILE:
             token = os.environ.get("STRAVA_ACCESS_TOKEN")
             cookie = os.environ.get("STRAVA_SESSION_COOKIE")
             if token or cookie:

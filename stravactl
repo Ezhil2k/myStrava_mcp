@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYTHON="${STRAVA_PYTHON:-$ROOT_DIR/.venv/bin/python}"
+case "${1:-dashboard}" in
+  dashboard|menu) exec "$PYTHON" "$ROOT_DIR/strava_tui.py" ;;
+  *) exec "$PYTHON" "$ROOT_DIR/strava_cli.py" "${1:-status}" ;;
+esac

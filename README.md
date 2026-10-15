@@ -99,6 +99,18 @@ In another terminal, load `.env` and run the tunnel client:
     set -a; source .env; set +a
     tunnel-client run --profile strava-http --health.listen-addr "$TUNNEL_HEALTH_LISTEN_ADDR"
 
+### Simple CLI
+
+The `stravactl` helper manages the Strava server and tunnel together. From
+this directory, run:
+
+    chmod +x stravactl
+    ./stravactl
+
+It also supports `./stravactl start`, `stop`, `restart`, `status`, `test`, and
+`logs`. It only manages Strava's server and tunnel processes; Garmin's port
+8000 is not touched.
+
 Keep it bound to `127.0.0.1` and expose it only through an authenticated,
 trusted MCP tunnel. Do not bind it to `0.0.0.0` or publish it directly: the
 server can read every credential profile in its configured directory.
